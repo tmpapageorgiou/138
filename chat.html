@@ -1,0 +1,73 @@
+<!doctype html>
+<html ng-app="app138">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="lib/onsen/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsen-css-components/onsen-css-components.min.css">
+  <link rel="stylesheet" href="css/chat.css">
+
+  <script src="lib/onsen/js/angular/angular.js"></script>
+  <script src="lib/onsen/js/onsenui.js"></script>
+  <script src="js/jquery-2.1.3.min.js"></script>
+  <script src="js/app.js"></script>
+
+</head>
+
+<body ng-controller="chat">
+
+  <ons-template id="landing.html">
+    <ons-sliding-menu var="app.slidingMenu" menu-page="empty.html" main-page="page.html" side="right" type="overlay" max-slide-distance="200px">
+    </ons-sliding-menu>
+  </ons-template>
+
+  <ons-tabbar hide-tabs="hgoe">
+    <ons-tab page="landing.html" active="true">
+      <form name="frmMessage" ng-submit="sendMessage(field)">
+        <ons-icon icon="" class="ons-icon ons-icon--ion">&nbsp;&nbsp;»</ons-icon>
+        <input type="text" ng-model="field" name="field" id="fieldMessage" maxlength=140 class="text-input text-input--transparent" placeholder="" style="width: 100%; vertical-align: middle;">
+      </form>
+    </ons-tab>
+  </ons-tabbar>
+
+  <ons-template id="empty.html">
+    <ons-toolbar>
+      <div class="center">Menu</div>
+    </ons-toolbar>
+  </ons-template>
+
+  <ons-template id="page.html">
+    <ons-toolbar>
+      <div class="center">List with Mini Pictures</div>
+    </ons-toolbar>
+
+    <ons-list>
+
+
+      <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="item in items">
+        <div ng-attr-class="{{ item.from != 'me' ? 'list-item-left to-right-pic' : 'list-item-left' }}">
+          <img src="http://www.avatarsdb.com/avatars/rihanna_rebelle_fleur.gif" class="avator">
+        </div>
+        <div ng-attr-class="{{ item.from != 'me' ? 'list-item-right to-right-text' : 'list-item-right' }}">
+          <div class="list-item-content">
+            <div class="name">
+              <span class="lucent">@{{ item.from }}</span>
+            </div>
+            <span class="desc">2 minutos atrás</span>
+            <br>
+            <span class="desc">{{ item.msg }}</span>
+          </div>
+        </div>
+      </ons-list-item>
+
+
+
+
+    </ons-list>
+
+  </ons-template>
+
+
+</body>
+
+</html>
