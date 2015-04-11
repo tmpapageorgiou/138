@@ -27,19 +27,20 @@ from prototype.character import update_message
 from prototype import logger
 
 
+def make_message(msg, mentions):
+    return {"msg": str(msg), "mentions": mentions}
+
 @gen.coroutine
-def load_chracter(db, char_id):
+def load_people(db, name):
     for retries in range(10):
-        char_json = yield db.places.find_one({"_id": ObjectId(char_id)})
-        if char_json:
+        people_json = yield db.people.find_one({"name": name})
+        if people_json:
             break
-        print  "Load_character", char_json
     else:
         logger.error("Char id = %s not found"% char_id)
         raise KeyError("Char id = %s not found"% char_id)
 
     raise gen.Return(Character.deserialize(db, char_json))
-
 
 class People(object):
 
@@ -117,12 +118,12 @@ class WSHandler(WebSocketHandler):
             logger.info("Trying to use a close websocket")
 
     @gen.coroutine
-    def open(self, char_id):
-        print "new connection", char_id
-        self.char = None
-        self.char = yield load_chracter(self.settings["db"], char_id)
+    def open(self, name):
+        print "new connection", name
+        self.people = None
+        self.people = yield load_people(self.settings["db"], name)
 
-        char_neighbors = yield self.char.neighbors()
+        people_neighbors = yield self.peple.neighbors()
 
         msg = update_message(self.char, char_neighbors)
         self.write_message(msg)
@@ -169,37 +170,6 @@ class HomeHandler(RequestHandler):
         yield char.save()
 
         self.render("index.html", char_id=str(char.id))
-
-class CommandHandler(RequestHandler):
-
-    def check_origin(self, origin):
-        return True
-
-    @gen.coroutine
-    def get(self):
-        x = randint(0, 90)
-        y = randint(0, 90)
-
-        char = Character(x, y, db=self.settings["db"])
-
-        yield char.save()
-
-        self.write(json.dumps({"id": char.id}))
-
-    @gen.coroutine
-    def post(self, char_id):
-        print "Command received " + str(self.request.body)
-        cmd = json.loads(self.request.body)
-
-
-        char = yield load_chracter(self.settings["db"], char_id)
-        char.command(cmd["action"])
-        yield char.save()
-
-        neighbors = yield char.neighbors()
-
-        self.write(update_message(char, neighbors))
-
 
 def main():
 
