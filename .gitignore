@@ -58,3 +58,6 @@ target/
 
 # vim
 *.swp
+
+# Bower Components
+138-app/static/assets/components/*
