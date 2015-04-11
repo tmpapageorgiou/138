@@ -16,8 +16,10 @@
 
 <body ng-controller="chat">
 
+
+  <!--------- base -------->
   <ons-template id="landing.html">
-    <ons-sliding-menu var="app.slidingMenu" menu-page="empty.html" main-page="page.html" side="right" type="overlay" max-slide-distance="200px">
+    <ons-sliding-menu swipeable="false" var="app.slidingMenu" menu-page="people.html" main-page="login.html" side="right" type="overlay" max-slide-distance="300px">
     </ons-sliding-menu>
   </ons-template>
 
@@ -29,24 +31,50 @@
       </form>
     </ons-tab>
   </ons-tabbar>
+  <!--------- base -------->
 
-  <ons-template id="empty.html">
+
+  <!--------- people -------->
+  <ons-template id="people.html">
     <ons-toolbar>
-      <div class="center">Menu</div>
+      <div class="center">Pessoas</div>
     </ons-toolbar>
+
+
+    <ons-list class="person-list">
+      <ons-list-item class="person" modifier="" ng-repeat="person in people">
+        <ons-row ng-click="sendTo(person.name); app.slidingMenu.toggleMenu()">
+          <ons-col width="40px">
+            <img src="http://www.avatarsdb.com/avatars/acrobat.gif" class="person-image">
+          </ons-col>
+          <ons-col class="person-name">
+            {{ person.name }}
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+
+
   </ons-template>
+
+  <!--------- people -------->
+
+
+
+
+
+
+  <!--------- chat -------->
 
   <ons-template id="page.html">
     <ons-toolbar>
-      <div class="center">List with Mini Pictures</div>
+      <div class="center">138</div>
     </ons-toolbar>
 
     <ons-list>
-
-
       <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="item in items">
         <div ng-attr-class="{{ item.from != 'me' ? 'list-item-left to-right-pic' : 'list-item-left' }}">
-          <img src="http://www.avatarsdb.com/avatars/rihanna_rebelle_fleur.gif" class="avator">
+          <img src="{{ item.avatar }}" class="avator">
         </div>
         <div ng-attr-class="{{ item.from != 'me' ? 'list-item-right to-right-text' : 'list-item-right' }}">
           <div class="list-item-content">
@@ -59,13 +87,24 @@
           </div>
         </div>
       </ons-list-item>
-
-
-
-
     </ons-list>
+  </ons-template>
+
+  <!--------- chat -------->
+
+
+
+  <!--------- login -------->
+
+  <ons-template id="login.html">
+    <div class="login_page">
+      <img src="img/facebook_login_button.png" ng-click="login()">
+    </div>
 
   </ons-template>
+
+  <!--------- chat -------->
+
 
 
 </body>
