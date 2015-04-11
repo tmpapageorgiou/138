@@ -1,0 +1,25 @@
+{
+  "name": "138",
+  "version": "0.0.1",
+  "homepage": "http://138.me",
+  "authors": [
+    "Cristian Oliveir",
+    "Jhonatan Prates",
+    "Robson Júnior",
+    "Thiago Papageourgiou"
+  ],
+  "description": "A new mobile chat experience",
+  "main": "index.py",
+  "keywords": [
+    "138",
+    "chat"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
