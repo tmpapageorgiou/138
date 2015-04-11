@@ -27,7 +27,7 @@
     <ons-tab page="landing.html" active="true">
       <form name="frmMessage" ng-submit="sendMessage(field)">
         <ons-icon icon="" class="ons-icon ons-icon--ion">&nbsp;&nbsp;»</ons-icon>
-        <input type="text" ng-model="field" name="field" id="fieldMessage" maxlength=140 class="text-input text-input--transparent" placeholder="" style="width: 100%; vertical-align: middle;">
+        <input type="text" ng-model="field" name="field" id="fieldMessage"  maxlength=140 class="text-input text-input--transparent" placeholder="" style="width: 100%; vertical-align: middle;">
       </form>
     </ons-tab>
   </ons-tabbar>
@@ -97,8 +97,19 @@
   <!--------- login -------->
 
   <ons-template id="login.html">
+
+
+
+
     <div class="login_page">
-      <img src="img/facebook_login_button.png" ng-click="login()">
+
+      <div class="logo_container">
+        <img src="img/logo.png" class="logo"> <br />
+        <img src="img/facebook_login_button.png" class="btn-fb" ng-click="login()">
+        <p>O 138 traz o conceito de zueira de chat para o mundo mobile de uma forma inovadora. Participe de salas com pessoas próximas a você.</p>
+      </div>
+
+
     </div>
 
   </ons-template>

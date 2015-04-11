@@ -1,6 +1,6 @@
 var app = angular.module('app138', ['onsen.directives']);
 
-app.controller('chat', function($scope, $rootScope) {
+app.controller('chat', function($scope, $rootScope, $timeout) {
 
   $scope.people = [{
     "name": "fulano"
@@ -70,21 +70,58 @@ app.controller('chat', function($scope, $rootScope) {
 
   ];
 
-  $scope.login = function(){
+  $scope.login = function() {
     app.slidingMenu.setSwipeable(true);
     app.slidingMenu.setMainPage("page.html");
+    $("#fieldMessage").removeAttr("readonly");
+    $("#fieldMessage").val("");
+    $scope.doAnimate = false;
   };
 
-  $scope.logout = function(){
+  $scope.logout = function() {
     app.slidingMenu.closeMenu();
     app.slidingMenu.setSwipeable(false);
     app.slidingMenu.setMainPage("login.html");
+    $("#fieldMessage").addAttr("readonly");
+    $scope.doAnimate = true;
   };
 
   $scope.sendTo = function(name) {
     $("#fieldMessage").val("@" + name + " ");
     $("#fieldMessage").focus();
   }
+
+  $scope.field = "";
+  $scope.randomSentences = ["Conheça novas pessoas.",
+    "Converse pessoas pŕoximas a você.",
+    "Fale com pessoas no seu círculo de bate papo.",
+    "E aí, quer tc?"
+  ];
+  $scope.charIndex = 0;
+  $scope.sentenceIndex = 0;
+  $scope.currentSentences = $scope.randomSentences[0];
+  $scope.doAnimate = true;
+
+  $scope.animateText = function() {
+    $timeout(function() {
+
+      if ($scope.doAnimate) {
+        $scope.field = $scope.currentSentences.substring(0, $scope.charIndex);
+        $scope.charIndex++;
+        if ($scope.charIndex > $scope.currentSentences.length) {
+          $scope.sentenceIndex++;
+          if ($scope.sentenceIndex >= $scope.randomSentences.length) {
+            $scope.sentenceIndex = 0;
+          }
+          $scope.charIndex = 0;
+          $scope.currentSentences = $scope.randomSentences[$scope.sentenceIndex];
+        }
+      }
+      $scope.animateText();
+    }, 90);
+  };
+
+  $scope.animateText();
 
 
   $scope.sendMessage = function(field) {
@@ -96,5 +133,4 @@ app.controller('chat', function($scope, $rootScope) {
       "avatar": "http://www.avatarsdb.com/avatars/vibrating_cat.gif"
     });
   }
-
 });
