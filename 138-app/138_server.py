@@ -1,7 +1,7 @@
 # -*- coding:UTF-8 -*-
 import json
-import time
-import StringIO
+
+from datetime import datetime
 
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
@@ -18,39 +18,37 @@ from motor import MotorCursor
 
 from bson.objectid import ObjectId
 
-from random import randint
-
-from prototype.character import ACharacter
-from prototype.character import CharacterGroup
-from prototype.character import update_message
-
-from prototype import logger
+from core138 import logger
 
 
-def make_message(msg, mentions):
-    return {"msg": str(msg), "mentions": mentions}
+def make_message(msg, mentions, people):
+    return {"from": people.name, "msg": str(msg), "mentions": mentions,
+            "type": "message", "avatar": people.url,
+            "datetime": datetime.now()}
 
 @gen.coroutine
 def load_people(db, name):
-    for retries in range(10):
+    for retries in range(5):
         people_json = yield db.people.find_one({"name": name})
         if people_json:
             break
     else:
-        logger.error("Char id = %s not found"% char_id)
-        raise KeyError("Char id = %s not found"% char_id)
+        raise gen.Return(None)
 
-    raise gen.Return(Character.deserialize(db, char_json))
+    raise gen.Return(People.from_dict(db, people_json))
 
 class People(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, x, y, db, id=None, name=None, url=""):
+        self.x = x
+        self.y = y
+        self.db = db
+        self.name = name
+        self.url = url
 
     @gen.coroutine
     def save(self):
-
-        self.id = yield self.db.places.save(self.serialize())
+        self.id = yield self.db.people.save(self.to_dict())
         self.id = str(self.id)
 
     @gen.coroutine
@@ -63,35 +61,32 @@ class People(object):
         if "results" in neighbors_json:
             neighbors_json = neighbors_json["results"]
 
-        neighbor_list = [Character.deserialize(self.db, c) for c in neighbors_json]
-        neighbors = CharacterGroup(neighbor_list)
+        neighbor_list = [People.from_dict(self.db, c) for c in neighbors_json]
+        neighbors = PeopleGroup(neighbor_list)
 
         raise gen.Return(neighbors)
 
-    def serialize(self):
+    def to_dict(self):
 
-        to_dict =  {"pos" : { "latitude": self.x, "longitude": self.y}, "type" : "Point",
-                    "name": self.name, "god_mode": self.god_mode}
+        to_dict =  {"loc" : [self.x, self.y], "type" : "Point",
+                    "name": self.name}
         if self.id:
             to_dict["_id"] = ObjectId(self.id)
 
         return to_dict
 
     @classmethod
-    def deserialize(cls, db, data):
+    def from_dict(cls, db, data):
 
-        x = data["pos"]["latitude"]
-        y = data["pos"]["longitude"]
-        char_id = str(data["_id"])
+        x, y = data["loc"]
+        id = str(data["_id"])
+        name = data["name"]
 
-        god_mode = False
-        if data.get("god_mode") == True:
-            god_mode = True
-
-        return cls(x, y, db=db, char_id=char_id, god_mode=god_mode)
+        return cls(x, y, db, id=id, name=name)
 
     def __str__(self):
-        return str({"x": self.x, "y": self.y, "id": str(self.id)})
+        return str({"x": self.x, "y": self.y, "id": str(self.id),
+                    "name": self.name})
 
     def _neighbors_query(self):
         return self.db.command({ "geoSearch": "people" ,
@@ -102,11 +97,29 @@ class People(object):
 
     @gen.coroutine
     def remove(self):
-        yield self.db.places.remove({"_id": ObjectId(self.id)})
+        yield self.db.people.remove({"_id": ObjectId(self.id)})
+
+class PeopleGroup(object):
+    """ Group of people"""
+
+    def __init__(self, people=[]):
+        self.people = people
+
+    def to_dicts(self):
+        return [{'x': p.x, 'y': p.y} for p in self.people]
+
+    def __iter__(self):
+        return iter(self.people)
+
+    def remove(self, key):
+        self.people.remove(key)
+
+    def add(self, people):
+        self.people.append(people)
 
 
 class WSHandler(WebSocketHandler):
-    """ Charactor command websocket """
+    """ People messenger websocket """
 
     def check_origin(self, origin):
         return True
@@ -122,39 +135,41 @@ class WSHandler(WebSocketHandler):
         print "new connection", name
         self.people = None
         self.people = yield load_people(self.settings["db"], name)
-
-        people_neighbors = yield self.peple.neighbors()
-
-        msg = update_message(self.char, char_neighbors)
-        self.write_message(msg)
+        if not self.people:
+            raise Exception("TODO: handle user unkown")
 
     @gen.coroutine
-    def on_message(self, cmd):
+    def on_message(self, data_json):
+        COMMAND_HANDLER = {"messsage": self.message_handler,
+                           "position": self.position_handler}
 
-        if not self.char:
+        if not self.people:
             raise gen.Return()
 
-        start_time = time.time()
+        data = json.loads(data_json)
 
-        cmd = json.loads(cmd)
-        self.char.command(cmd["action"])
+        if data["type"] == "position":
+            self.people.x, people.y = [int(p) for p in data["position"]]
+            yield self.people.save()
+            raise gen.Return(None)
 
-        yield self.char.save()
+        neighbors = yield self.people.neighbors()
 
-        neighbors = yield self.char.neighbors()
+        msg = make_message(self.people, msg["menstions"] )
 
-        msg = update_message(self.char, neighbors)
-        try:
-            self.write_message(msg)
-        except:
-            return
-
-        logger.everage("Moving char: %s " % str(self.char.id), time.time()-start_time)
+        logger.info("Message from %s: %s " % (str(self.people), msg,
+                    str(neighbors)))
 
     def on_close(self):
         print "connection closed"
         super(self.__class__, self).on_close()
-        self.char.remove()
+        self.people.remove()
+
+    def message_handler(self, msg):
+        pass
+
+    def position_handler(self):
+        pass
 
 class HomeHandler(RequestHandler):
     """ Returns home screen """
@@ -162,27 +177,32 @@ class HomeHandler(RequestHandler):
     def check_origin(self, origin):
         return True
 
+    def get(self):
+        self.render("index.html")
+
     @gen.coroutine
-    def get(self, name=None):
+    def post(self, name):
 
-        char = Character(x, y, db=self.settings["db"], god_mode=god_mode)
+        logger.debug("Command received " + str(self.request.body))
+        init_data = json.loads(self.request.body)
 
-        yield char.save()
+        people = People(x, y, db=self.settings["db"], name=name,
+                        url=init_data["url"])
+        self.write('{"status": "OK"}')
 
-        self.render("index.html", char_id=str(char.id))
 
 def main():
 
     app = Application([url(r"/ws/(\w+)", WSHandler),
-        url(r"/static/(.*)", StaticFileHandler, {'path': "static"}),
-        url(r"/", HomeHandler),
-        url(r"/command/(\w+)", CommandHandler),
-        url(r"/new", CommandHandler)])
+                       url(r"/static/(.*)", StaticFileHandler,
+                           {'path': "static"}),
+                       url(r"/new/(\w+)", HomeHandler),
+                       url(r"/", HomeHandler)])
 
     server = HTTPServer(app)
     server.bind(8888)
     server.start(0)  # forks one process per cpu
-    app.settings["db"] = MotorClient().prototype
+    app.settings["db"] = MotorClient().db138
     IOLoop.current().start()
 
 if __name__ ==  "__main__":
