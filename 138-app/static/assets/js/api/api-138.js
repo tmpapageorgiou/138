@@ -37,7 +37,7 @@ var Api138 = function(data) {
 			mentions: String(str).match(/@[\w]*/g)
 		};
 
-		CONNECTION.send(JSON.stringify(obj));
+		CONNECTION().send(JSON.stringify(obj));
 	};
 
 	PUBLIC.timeAgo = function (timestamp) {
@@ -58,7 +58,7 @@ var Api138 = function(data) {
 		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
 		}
 		return PRIVATE.con;
-	}()
+	}
 
 
 	/**
@@ -77,7 +77,7 @@ var Api138 = function(data) {
 						type: 'position'
 					});
 
-				CONNECTION.send(geo);
+				CONNECTION().send(geo);
 			});
 		}, 5000);
 	} else {
@@ -97,6 +97,7 @@ var Api138 = function(data) {
 	};
 
 	CONNECTION.onclose = function(evt) {
+		localStorage.clear();
 		console.log('Connection closed');
 		PRIVATE.con = null;
 	};
