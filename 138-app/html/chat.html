@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+
   <link rel="stylesheet" href="static/assets/lib/onsen/css/onsenui.css">
   <link rel="stylesheet" href="static/assets/lib/onsen-css-components/onsen-css-components.min.css">
   <link rel="stylesheet" href="static/assets/css/chat.css">
@@ -12,6 +13,7 @@
   <script src="static/assets/js/jquery-1.11.1.js"></script>
   <script src="static/assets/js/api/api-138.js"></script>
   <script src="static/assets/js/app.js"></script>
+
 
 </head>
 
@@ -24,7 +26,7 @@
     </ons-sliding-menu>
   </ons-template>
 
-  <ons-tabbar hide-tabs="hgoe">
+  <ons-tabbar hide-tabs="hgoe" class="chat-header">
     <ons-tab page="landing.html" active="true">
       <form name="frmMessage" ng-submit="sendMessage(field)">
         <ons-icon icon="" class="ons-icon ons-icon--ion">&nbsp;&nbsp;»</ons-icon>
@@ -68,8 +70,10 @@
   <!--------- chat -------->
 
   <ons-template id="page.html">
-    <ons-toolbar>
-      <div class="center">138</div>
+    <ons-toolbar class="chat-header">
+      <div class="left">
+        <img src="/static/assets/img/logo.png">
+      </div>
     </ons-toolbar>
 
     <ons-list>
