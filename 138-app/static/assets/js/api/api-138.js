@@ -24,6 +24,8 @@ var Api138 = function(data) {
 		return 'ws://' + hostname + (((port != 80) && (port != 443)) ? ':' + port : '') + '/ws/' + data.userID;
 	};
 
+	PRIVATE.con = null;
+
 
 	/**
 	 *
@@ -40,26 +42,26 @@ var Api138 = function(data) {
 		CONNECTION().send(JSON.stringify(obj));
 	};
 
-	PUBLIC.timeAgo = function (timestamp) {
+	PUBLIC.timeAgo = function(timestamp) {
 		return jQuery.timeago(timestamp * 1000);
-	}
+	};
+
+	PUBLIC.connection = function () {
+		return CONNECTION;
+	};
 
 
 	/**
 	 *
 	 * DEFINE URL AND SOCKET
 	 *
-	 **/
-
-  PRIVATE.con = null;
+	 **/	
 	CONNECTION = function() {
-		if(!PRIVATE.con)
-	  {
-		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
+		if (!PRIVATE.con) {
+			PRIVATE.con = new WebSocket(PRIVATE.getURL());
 		}
 		return PRIVATE.con;
-	}
-
+	};
 
 	/**
 	 *
@@ -75,11 +77,15 @@ var Api138 = function(data) {
 						latitude: lat,
 						longitude: lon,
 						type: 'position'
-					});
+					});			
 
 				CONNECTION().send(geo);
 			});
 		}, 5000);
+
+		if (data.geolocationCallback) {
+			navigator.geolocation.watchPosition(data.geolocationCallback(position));
+		}
 	} else {
 		alert('API Geolocation not found');
 	}
