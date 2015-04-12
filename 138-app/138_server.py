@@ -27,7 +27,7 @@ from core138 import logger
 def make_message(msg, people, mentions):
     return {"from": people.name, "msg": unicode(msg), "mentions": mentions,
             "type": "message", "avatar": people.url,
-            "datetime": time.time()}
+            "datetime": int(time.time())}
 
 @gen.coroutine
 def load_people(db, name):
@@ -49,6 +49,7 @@ class People(object):
         self.name = name
         self.url = url
         self.id = id
+        self._distance = 1000
 
     @gen.coroutine
     def save(self):
@@ -99,12 +100,11 @@ class People(object):
                                     {"$near":
                                      {"$geometry":{"type": "Point",
                                                    "coordinates": [self.x, self.y]},
-                                      "$maxDistance": 111302 }}})
+                                      "$maxDistance": self._distance }}})
 
     @gen.coroutine
     def remove(self):
-        pass
-        #yield self.db.people.remove({"_id": ObjectId(self.id)})
+        yield self.db.people.remove({"_id": ObjectId(self.id)})
 
 class PeopleGroup(object):
     """ Group of people"""
@@ -174,15 +174,15 @@ class WSHandler(WebSocketHandler):
         print "new connection", name
         self.people = None
         self.people = yield load_people(self.settings["db"], name)
+        self.broadcast = None
         if not self.people:
-            raise Exception("TODO: handle user unkown")
+            self.send_error("Name already exists!")
+            raise gen.Return(None)
         self.broadcast = Broadcast(self)
 
     @gen.coroutine
     def on_message(self, data_json):
         logger.info("Message received: " + str(data_json))
-        COMMAND_HANDLER = {"messsage": self.message_handler,
-                           "position": self.position_handler}
 
         if not self.people:
             raise gen.Return()
@@ -202,14 +202,8 @@ class WSHandler(WebSocketHandler):
     def on_close(self):
         print "connection closed"
         super(self.__class__, self).on_close()
-        self.people.remove()
-        self.broadcast.remove(self.people.name)
-
-    def message_handler(self, msg):
-        pass
-
-    def position_handler(self):
-        pass
+        if self.broadcast:
+            self.broadcast.remove(self.people.name)
 
 class HomeHandler(RequestHandler):
     """ Returns home screen """
@@ -222,9 +216,13 @@ class HomeHandler(RequestHandler):
 
     @gen.coroutine
     def post(self, name):
-
         logger.debug("Command received " + str(self.request.body))
         data = json.loads(self.request.body)
+
+        self.people = yield load_people(self.settings["db"], name)
+        if self.people:
+            self.send_error(status_code=409)
+            raise gen.Return(None)
 
         url, x, y = data["url"], data["latitude"], data["longitude"]
 
@@ -239,9 +237,9 @@ def main():
     app = Application([url(r"/ws/(\w+)", WSHandler),
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': "static"}),
+                       url(r"/new/(\w+)", HomeHandler),
                        url(r"/(.+)", StaticFileHandler,
                            {'path': "html"}),
-                       url(r"/new/(\w+)", HomeHandler),
                        url(r"/", HomeHandler)])
 
     server = HTTPServer(app)
