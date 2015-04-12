@@ -13,14 +13,20 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.api138 = new Api138({
     userID: localStorage["username"],
-    host: '172.16.5.182',
-    port: 8888,
+    host: window.location.host,
+    port: window.location.port || 80,
     onMsgCallback: function(data) {
+
       if (data.type == "message") {
         $scope.messages.unshift(data);
       } else if (data.type == "neighbors") {
-        $scope.people.unshift(data);
+        $scope.people = data["neightbors"];
       }
+
+      for (var i = 0; i < $scope.messages.length; i++) {
+        $scope.messages[i].timeAgo = $scope.api138.timeAgo($scope.messages[i].datetime);
+      }
+
       $scope.$apply();
     }
   });
@@ -36,12 +42,8 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
   };
 
   $scope.logout = function() {
-    app.slidingMenu.closeMenu();
-    app.slidingMenu.setSwipeable(false);
-    app.slidingMenu.setMainPage("page.html");
-    $("#fieldMessage").addAttr("readonly");
-    $scope.doAnimate = true;
-    location.href('index.html');
+    localStorage.clear();
+    location.href = '/';
   };
 
   $scope.sendTo = function(name) {
