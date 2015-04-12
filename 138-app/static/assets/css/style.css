@@ -395,3 +395,17 @@ margin-top:20px;
   width: 300px;
 
 }
+
+.avatars{
+  margin: 5px;
+}
+
+.avatars img{
+   float: left;
+   padding: 5px;
+   width: 80px;
+}
+
+.avatar-selected{
+  border: 2px solid;
+}

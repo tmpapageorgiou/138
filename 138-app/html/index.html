@@ -61,7 +61,10 @@
                     <form action="#" id="user-login">
                       <div id="login-error"></div>
                       <input id="user-nickname" name="name" type="text" placeholder="Seu Nick">
-                      <input id="user-avatar" name="avatar" type="url" value="http://www.avatarsdb.com/avatars/acrobat.gif" placeholder="Cole a url de seu avatar">
+                      <input id="user-avatar" name="avatar" type="hidden" value="http://www.avatarsdb.com/avatars/acrobat.gif" placeholder="Cole a url de seu avatar">
+                      <a href="#" class="btn btn-lg btn-success" data-toggle="modal"
+                         data-target="#basicModal">Avatar</a>
+
                       <input type="submit" class="btn btn-custom btn-two" value="Entrar">
                     </form>
                 </div>
@@ -186,7 +189,78 @@
              </div>
     </section>
      <!-- CLIENTS SECTION END-->
-
+     <div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="modal-header">
+                 <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                 </div>
+                 <div class="modal-body avatars">
+                     <h3>Avatars</h3>
+                     <div class="row">
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/dear_god.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/color_dance.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/burning_man.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/vibrating_cat.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/acrobat.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/bieber_believe.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/headbangers.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/headbang.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/My_Eyes.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/kitty_sad_face.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/cool_alfred.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/jessica_rabbit_look.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/stewie_dooooohhh.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/stewie_dancing.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/stewie_crazy.jpg" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://www.avatarsdb.com/avatars/rihanna_rebelle_fleur.gif" alt="" >
+                       </div>
+                       <div class="col-md-2 avatars-image">
+                         <img src="http://s3.favim.com/orig/44/angry-computer-fire-gif-hahahahahahahahahahahaha-Favim.com-371896.gif" alt="" >
+                       </div>
+                       <div class="col-md-12 avatars-image">
+                         OU insira sua URL:
+                         <input id="custom-avatar" name="avatar" type="url" value="" placeholder="Cole a url de seu avatar">
+                       </div>
+                     </div>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+             </div>
+         </div>
+       </div>
+     </div>
     <!-- FOOTER SECTION START-->
     <footer>
       <div class="container">
