@@ -44,6 +44,7 @@ $(document).ready(function () {
           contentType: 'application/json; charset=utf-8',
           dataType: "json",
           success: function(response) {
+            localStorage.setItem("username", data.name);
             window.location.replace("chat.html")
           },
           error: function(response){
