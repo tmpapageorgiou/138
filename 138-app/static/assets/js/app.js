@@ -13,8 +13,8 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.api138 = new Api138({
     userID: localStorage["username"],
-    host: CONFIG.host,
-    port: CONFIG.port,
+    host: window.location.host,
+    port: window.location.port || 80,
     onMsgCallback: function(data) {
 
       if (data.type == "message") {

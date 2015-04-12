@@ -7,7 +7,7 @@ var Api138 = function(data) {
     W = window,
     D = document,
     LOCATION = W.location,
-    HOSTNAME = LOCATION.hostname,
+    HOSTNAME = LOCATION.host,
     PORT = LOCATION.port,
     getConnection;
 
@@ -18,10 +18,8 @@ var Api138 = function(data) {
    *
    **/
   PRIVATE.getURL = function() {
-    var hostname = data.host ? data.host : HOSTNAME,
-      port = data.port ? data.port : PORT;
-
-    return 'ws://' + hostname + (((port != 80) && (port != 443)) ? ':' + port : '') + '/ws/' + data.userID;
+    var hostname = data.host ? data.host : HOSTNAME
+    return 'ws://' + hostname + '/ws/' + data.userID;
   };
 
   PRIVATE.con = null;
