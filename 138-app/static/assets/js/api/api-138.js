@@ -17,14 +17,6 @@ var Api138 = function(data) {
 	 * PRIVATE METHODS
 	 *
 	 **/
-	PRIVATE.parse = function(str) {
-		return JSON.parse(str);
-	};
-
-	PRIVATE.stringify = function(obj) {
-		return JSON.stringify(obj);
-	};
-
 	PRIVATE.getURL = function() {
 		var hostname = data.host ? data.host : HOSTNAME,
 			port = data.port ? data.port : PORT;
@@ -45,7 +37,7 @@ var Api138 = function(data) {
 			mentions: String(str).match(/@[\w]*/g)
 		};
 
-		CONNECTION.send(PRIVATE.stringify(obj));
+		CONNECTION.send(JSON.stringify(obj));
 	};
 
 	PUBLIC.timeAgo = function (timestamp) {
@@ -69,19 +61,15 @@ var Api138 = function(data) {
 	 *
 	 **/
 	if (navigator.geolocation) {
-		var lat,
-			lon,
-			geo;
-
 		setInterval(function() {
 			navigator.geolocation.getCurrentPosition(function(position) {
-				lat = position.coords.latitude;
-				lon = position.coords.longitude;
-				geo = JSON.stringify({
-					latitude: lat,
-					longitude: lon,
-					type: 'position'
-				});
+				var lat = position.coords.latitude,
+					lon = position.coords.longitude,
+					geo = JSON.stringify({
+						latitude: lat,
+						longitude: lon,
+						type: 'position'
+					});
 
 				CONNECTION.send(geo);
 			});
