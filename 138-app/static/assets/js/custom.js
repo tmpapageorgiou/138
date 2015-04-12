@@ -50,7 +50,7 @@ $(document).ready(function () {
 
         $.ajax({
             type: "POST",
-            url: "http://172.16.5.182:8888/new/"+$("#user-nickname").val(),
+            url: "http://" + window.location.host + "/new/"+$("#user-nickname").val(),
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
             dataType: "json",

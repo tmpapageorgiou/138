@@ -13,8 +13,8 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.api138 = new Api138({
     userID: localStorage["username"],
-    host: '172.16.5.182',
-    port: 8888,
+    host: window.location.host,
+    port: window.location.port || 80,
     onMsgCallback: function(data) {
 
       if (data.type == "message") {
@@ -24,7 +24,6 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
       }
 
       for (var i = 0; i < $scope.messages.length; i++) {
-        console.log($scope.api138.timeAgo($scope.messages[i].datetime));
         $scope.messages[i].timeAgo = $scope.api138.timeAgo($scope.messages[i].datetime);
       }
 
