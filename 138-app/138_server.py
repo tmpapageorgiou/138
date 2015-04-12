@@ -279,7 +279,7 @@ def main():
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': get_current_dir()+"/static"}),
                        url(r"/new/(\w+)", HomeHandler),
-                       url(r"/(.+)", StaticFileHandler, {'path': get_current_dir()+"html"}),
+                       url(r"/(.+)", StaticFileHandler, {'path': get_current_dir()+"/html"}),
                        url(r"/", HomeHandler)], debug=False)
 
     server = HTTPServer(app)
