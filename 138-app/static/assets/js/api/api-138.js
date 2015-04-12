@@ -105,14 +105,10 @@ var Api318 = function (data) {
 	*
 	**/
 	return PUBLIC;
-};
+}; 
 
-
-
-
-
-var t = new Api318({
-	userID: 'fulano',
-	host: '172.16.5.182',
-	port: 8888
-});
+// var t = new Api318({
+// 	userID: 'fulano',
+// 	host: '172.16.5.182',
+// 	port: 8888
+// });
