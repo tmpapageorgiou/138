@@ -80,3 +80,37 @@
   margin-top: 8px;
   border-radius: 2px;
 }
+
+.login_page{
+  background: url('../img/home.jpg');
+  height: 100vh;
+  text-align: center;
+  padding-top: 21px;
+}
+
+
+.logo_container{
+  margin: auto;
+    width: 305px;
+    padding: 7px;
+    background-color: #f26241;
+    text-align: center;
+    border-radius: 20px;
+    padding-top: 30px;
+    color: white;
+}
+
+.logo{
+  width: 163px;
+
+}
+.btn-fb{
+  width: 253px;
+  margin-top: 20px;
+
+}
+.login_footer{
+  margin-top: 50px;
+  color: white;
+  width: 300px;
+}
