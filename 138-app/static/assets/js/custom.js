@@ -14,20 +14,22 @@
 ========================================================  */
 $(document).ready(function () {
 
-    /*====================================
-          SUBSCRIPTION   SCRIPTS
-    ======================================*/
 
-    // SCROLL SCRIPTS
-    $('.scroll-me a').bind('click', function (event) { //just pass scroll-me class and start scrolling
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-            scrollTop: $($anchor.attr('href')).offset().top
-        }, 1000, 'easeInOutQuad');
-        event.preventDefault();
-    });
+    //AVATAR
+    $('.avatars-image').click(function(event){
+      var urlImage = $(this).find("img").attr("src");
 
+      if($('#custom-avatar').val() != ""){
+        urlImage = $('#custom-avatar').val();
+      }
+      else
+      {
+        $('.avatars-image img').removeClass("avatar-selected");
+        $(this).find("img").addClass("avatar-selected");
+      }
 
+      $("#user-avatar").val(urlImage);
+    })
 
     validName = function(name){
       return /^.*([a-z]|[0-9]|[A-Z])$/.test(name)
@@ -74,6 +76,21 @@ $(document).ready(function () {
       }
 
     })
+
+
+    /*====================================
+          SUBSCRIPTION   SCRIPTS
+    ======================================*/
+
+    // SCROLL SCRIPTS
+    $('.scroll-me a').bind('click', function (event) { //just pass scroll-me class and start scrolling
+        var $anchor = $(this);
+        $('html, body').stop().animate({
+            scrollTop: $($anchor.attr('href')).offset().top
+        }, 1000, 'easeInOutQuad');
+        event.preventDefault();
+    });
+
 
 
  });
