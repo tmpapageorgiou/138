@@ -1,6 +1,7 @@
 # -*- coding:UTF-8 -*-
 import json
 import time
+import os
 
 from datetime import datetime
 
@@ -127,8 +128,9 @@ class PeopleGroup(object):
     def __init__(self, people=[]):
         self.people = people
 
-    def to_dicts(self):
-        return [{'x': p.x, 'y': p.y} for p in self.people]
+    def to_dict(self):
+        return {"neightbors": [{"name": p.name, "avatar": p.avatar}
+                               for p in self.people]}
 
     def __iter__(self):
         return iter(self.people)
@@ -138,6 +140,7 @@ class PeopleGroup(object):
 
     def add(self, people):
         self.people.append(people)
+
 
 class Broadcast(object):
     """ Broadcast to all clients """
@@ -165,10 +168,11 @@ class Broadcast(object):
         neighbors = yield people.neighbors()
 
         for key in neighbors:
-            logger.debug("Will send to: "+key.name)
             if key.name in self.clients:
                 logger.debug("Sending to: "+key.name)
                 self.clients[key.name].write_message(msg)
+            else:
+                logger.debug("User disconnected: "+key.name)
 
         logger.info(u"Message from %s: %s" % (people.name, unicode(msg)))
 
@@ -196,24 +200,16 @@ class WSHandler(WebSocketHandler):
 
     @gen.coroutine
     def on_message(self, data_json):
-        logger.info("Message received: " + str(data_json))
-        COMMAND_HANDLER = {"messsage": self.message_handler,
+        logger.info("Message received: " + unicode(data_json))
+        COMMAND_HANDLER = {"message": self.message_handler,
                            "position": self.position_handler}
 
         if not self.people:
             raise gen.Return()
 
         data = json.loads(data_json)
-
-        if data["type"] == "position":
-            self.people.set_position(data["latitude"], data["longitude"])
-            yield self.people.save()
-            raise gen.Return(None)
-
-        msg = make_message(data.get("msg", ""), self.people,
-                           data.get("mentions", []))
-
-        yield self.broadcast.send(self.people, msg)
+        msg_type = data["type"].lower()
+        yield COMMAND_HANDLER[msg_type](data)
 
     @gen.coroutine
     def on_close(self):
@@ -224,11 +220,22 @@ class WSHandler(WebSocketHandler):
         if self.broadcast:
             self.broadcast.remove(self.people.name)
 
-    def message_handler(self):
-        pass
+    @gen.coroutine
+    def message_handler(self, data):
+        msg = make_message(data.get("msg", ""), self.people,
+                           data.get("mentions", []))
 
-    def position_handler(self):
-        pass
+        yield self.broadcast.send(self.people, msg)
+
+    @gen.coroutine
+    def position_handler(self, data):
+        self.people.set_position(data["latitude"], data["longitude"])
+        yield self.people.save()
+        neighbors = yield self.people.neighbors()
+        neighbors_msg = neighbors.to_dict()
+        neighbors_msg["type"] = "neighbors"
+        logger.debug("Sending neighbors: "+unicode(neighbors_msg))
+        self.write_message(json.dumps(neighbors_msg))
 
 class HomeHandler(CorsMixin, RequestHandler):
     """ Returns home screen """
@@ -263,15 +270,17 @@ class HomeHandler(CorsMixin, RequestHandler):
         people.save()
         self.write('{"status": "OK"}')
 
+def get_current_dir():
+    return os.path.dirname(__file__)
 
 def main():
 
     app = Application([url(r"/ws/(\w+)", WSHandler),
                        url(r"/static/(.*)", StaticFileHandler,
-                           {'path': "static"}),
+                           {'path': get_current_dir()+"/static"}),
                        url(r"/new/(\w+)", HomeHandler),
-                       url(r"/(.+)", StaticFileHandler, {'path': "html"}),
-                       url(r"/", HomeHandler)], debug=True)
+                       url(r"/(.+)", StaticFileHandler, {'path': get_current_dir()+"html"}),
+                       url(r"/", HomeHandler)], debug=False)
 
     server = HTTPServer(app)
     parser = ArgumentParser()
