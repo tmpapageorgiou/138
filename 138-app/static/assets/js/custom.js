@@ -16,21 +16,15 @@ $(document).ready(function () {
 
     //Cache Of Geo
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(){});
+      navigator.geolocation.getCurrentPosition(function(position){});
     }
 
     //AVATAR
     $('.avatars-image').click(function(event){
       var urlImage = $(this).find("img").attr("src");
 
-      if($('#custom-avatar').val() != ""){
-        urlImage = $('#custom-avatar').val();
-      }
-      else
-      {
-        $('.avatars-image img').removeClass("avatar-selected");
-        $(this).find("img").addClass("avatar-selected");
-      }
+      $('.avatars-image img').removeClass("avatar-selected");
+      $(this).find("img").addClass("avatar-selected");
 
       $("#user-avatar").val(urlImage);
     })
