@@ -271,7 +271,7 @@ class HomeHandler(CorsMixin, RequestHandler):
         self.write('{"status": "OK"}')
 
 def get_current_dir():
-    return os.path.dirname(__file__)
+    return os.path.abspath(os.path.dirname(__file__))
 
 def main():
 
