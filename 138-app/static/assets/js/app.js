@@ -1,10 +1,15 @@
 var app = angular.module('app138', ['onsen.directives']);
 
+if (localStorage.getItem("username") === null) {
+  location.href = "/";
+}
 
 app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.people = [];
   $scope.messages = [];
+
+  $scope.init = function() {};
 
   $scope.api138 = new Api138({
     userID: localStorage["username"],
@@ -19,24 +24,6 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
       $scope.$apply();
     }
   });
-
-
-  $scope.init = function() {
-
-    if (localStorage["username"] === undefined) {
-      var tmp = "user" + Math.random().toString(36).substr(2, 5);
-      var user = prompt("Por favor, digite seu nome:", tmp);
-
-      console.log(user)
-      var data = {
-        "type": "new_user",
-        "avatar": "http://www.avatarsdb.com/avatars/rihanna_shark.jpg"
-      }
-
-      $http.post("http://172.16.5.182:8888/new/" + user, data);
-      localStorage.setItem("username", user);
-    }
-  }
 
   $scope.currentUser = localStorage.getItem("username");
 
