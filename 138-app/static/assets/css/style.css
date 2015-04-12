@@ -376,6 +376,14 @@ margin-top:20px;
 /*================================
      USER STYLES
  ============================  */
+#login-error{
+  margin: auto;
+  width: 300px;
+  color: #ED1313;
+  background-color: rgba(255, 255, 255, 0.71);
+  text-align: center;
+}
+
 #user-login input{
   width: 45%;
 }

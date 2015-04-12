@@ -14,6 +14,8 @@ from tornado import gen
 from tornado.websocket import WebSocketHandler
 from tornado.httpserver import HTTPServer
 
+from tornado_cors import CorsMixin
+
 from motor import MotorClient
 from motor import MotorCursor
 
@@ -80,7 +82,8 @@ class People(object):
     def to_dict(self):
 
         to_dict =  {"loc" : [self.x, self.y], "type" : "Point",
-                    "name": self.name, "active": self._active}
+                    "name": self.name, "active": self._active,
+                    "avatar": self.avatar}
         if self.id:
             to_dict["_id"] = ObjectId(self.id)
 
@@ -92,8 +95,9 @@ class People(object):
         x, y = data["loc"]
         id = str(data["_id"])
         name = data["name"]
+        avatar = data.get("avatar", "")
 
-        obj = cls(db, id=id, name=name)
+        obj = cls(db, id=id, name=name, avatar=avatar)
         obj._active = data["active"]
         obj.x = x
         obj.y = y
@@ -115,8 +119,7 @@ class People(object):
 
     @gen.coroutine
     def remove(self):
-        pass
-        #yield self.db.people.remove({"_id": ObjectId(self.id)})
+        yield self.db.people.remove({"_id": ObjectId(self.id)})
 
 class PeopleGroup(object):
     """ Group of people"""
@@ -180,9 +183,10 @@ class WSHandler(WebSocketHandler):
         print "new connection", name
         self.people = None
         self.people = yield load_people(self.settings["db"], name)
+        self.broadcast = None
         if not self.people:
-            self.send_error("User do not exists!")
-            logger.error("Name already exists! %s" % name)
+            self.send_error("Name do not exists!")
+            logger.error("Name does not exists! %s" % name)
             raise gen.Return(None)
         try:
             self.broadcast = Broadcast(self)
@@ -215,28 +219,32 @@ class WSHandler(WebSocketHandler):
     def on_close(self):
         print "connection closed, user: %s" % str(self.people)
         super(self.__class__, self).on_close()
-        yield self.people.remove()
+        if self.people:
+            yield self.people.remove()
         if self.broadcast:
             self.broadcast.remove(self.people.name)
 
-class HomeHandler(RequestHandler):
+    def message_handler(self):
+        pass
+
+    def position_handler(self):
+        pass
+
+class HomeHandler(CorsMixin, RequestHandler):
     """ Returns home screen """
 
-    def set_default_headers(self):
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Credentials", "true")
-        self.set_header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
-        self.set_header("Access-Control-Allow-Headers",
-            "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By, If-Modified-Since, X-File-Name, Cache-Control")
+    CORS_ORIGIN = '*'
+    CORS_HEADERS = 'Content-Type'
+    CORS_METHODS = 'POST,OPTIONS,GET'
+    CORS_CREDENTIALS = True
+    CORS_MAX_AGE = 21600
+    CORS_EXPOSE_HEADERS = '*'
 
     def check_origin(self, origin):
         return True
 
     def get(self):
         self.render("html/index.html")
-
-    def options(self, *args):
-        return
 
     @gen.coroutine
     def post(self, name):
@@ -262,8 +270,7 @@ def main():
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': "static"}),
                        url(r"/new/(\w+)", HomeHandler),
-                       url(r"/(.+)", StaticFileHandler,
-                           {'path': "html"}),
+                       url(r"/(.+)", StaticFileHandler, {'path': "html"}),
                        url(r"/", HomeHandler)], debug=True)
 
     server = HTTPServer(app)
