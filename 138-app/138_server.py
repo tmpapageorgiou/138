@@ -52,7 +52,7 @@ class People(object):
         self.name = name
         self.avatar = avatar
         self.id = id
-        self._distance = 70
+        self._distance = 1000
         self._active = False
 
     @gen.coroutine
