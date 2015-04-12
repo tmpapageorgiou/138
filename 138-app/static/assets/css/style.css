@@ -182,8 +182,8 @@ color:#fff;
 
 }
  .btn-two:hover {
- background-color:transparent;
- color:#000;
+ color:#FFFFFF;
+ border:5px solid #cccccc;
  text-decoration:none;
     }
 .btn-three {
