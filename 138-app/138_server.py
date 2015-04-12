@@ -261,9 +261,9 @@ def main():
     app = Application([url(r"/ws/(\w+)", WSHandler),
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': "static"}),
+                       url(r"/new/(\w+)", HomeHandler),
                        url(r"/(.+)", StaticFileHandler,
                            {'path': "html"}),
-                       url(r"/new/(\w+)", HomeHandler),
                        url(r"/", HomeHandler)], debug=True)
 
     server = HTTPServer(app)
