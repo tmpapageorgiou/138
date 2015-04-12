@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="/static/assets/css/chat.css">
   <link href="/static/assets/css/style.css" rel="stylesheet" />
 
+
   <script src="/static/assets/lib/onsen/js/angular/angular.js"></script>
   <script src="/static/assets/lib/onsen/js/onsenui.js"></script>
   <script src="/static/assets/js/jquery-1.11.1.js"></script>
   <script src="/static/assets/js/api/api-138.js"></script>
   <script src="/static/assets/js/app.js"></script>
+
 
 
 </head>
@@ -85,14 +87,13 @@
       <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="message in messages">
         <div ng-attr-class="{{ message.from != currentUser ? 'list-item-left to-right-pic' : 'list-item-left' }}">
           <img src="{{ message.avatar }}" class="avator">
-          {{ message }}
         </div>
         <div ng-attr-class="{{ message.from != currentUser ? 'list-item-right to-right-text' : 'list-item-right' }}">
           <div class="list-item-content">
             <div class="name">
               <span class="lucent">@{{ message.from }}</span>
             </div>
-            <span class="desc">2 minutos atrás</span>
+            <span class="desc">{{ message.datetime }}</span>
             <br>
             <span class="desc">{{ message.msg }}</span>
           </div>
