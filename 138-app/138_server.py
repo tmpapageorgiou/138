@@ -229,9 +229,16 @@ class WSHandler(WebSocketHandler):
 
     @gen.coroutine
     def position_handler(self, data):
+        new_in_room = not self.people._active
         self.people.set_position(data["latitude"], data["longitude"])
         yield self.people.save()
         neighbors = yield self.people.neighbors()
+
+        if new_in_room:
+            msg = make_message("Agora o grupo tem mais um integrante",
+                               self.people, [])
+            yield self.broadcast.send(self.people, msg)
+
         neighbors_msg = neighbors.to_dict()
         neighbors_msg["type"] = "neighbors"
         logger.debug(u"Sending neighbors: "+unicode(neighbors_msg))
@@ -286,10 +293,12 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
     parser.add_argument("--port", help="Server port", default=8888)
+    parser.add_argument("--distance", help="Distance", default=1000)
     args = parser.parse_args()
     server.bind(args.port)
     server.start(1)
     app.settings["db"] = MotorClient(args.mongo).db138
+    app.settings["distance"] = args.distance
     IOLoop.current().start()
 
 
