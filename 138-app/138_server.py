@@ -26,8 +26,8 @@ from core138 import logger
 
 def make_message(msg, people, mentions):
     return {"from": people.name, "msg": unicode(msg), "mentions": mentions,
-            "type": "message", "avatar": people.url,
-            "datetime": time.time()}
+            "type": "message", "avatar": people.avatar,
+            "datetime": int(time.time())}
 
 @gen.coroutine
 def load_people(db, name):
@@ -42,18 +42,25 @@ def load_people(db, name):
 
 class People(object):
 
-    def __init__(self, x, y, db, id=None, name=None, url=""):
-        self.x = x
-        self.y = y
+    def __init__(self, db, id=None, name=None, avatar=""):
+        self.x = 0
+        self.y = 0
         self.db = db
         self.name = name
-        self.url = url
+        self.avatar = avatar
         self.id = id
+        self._distance = 1000
+        self._active = False
 
     @gen.coroutine
     def save(self):
         self.id = yield self.db.people.save(self.to_dict())
         self.id = str(self.id)
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
+        self._active = True
 
     @gen.coroutine
     def neighbors(self):
@@ -73,7 +80,7 @@ class People(object):
     def to_dict(self):
 
         to_dict =  {"loc" : [self.x, self.y], "type" : "Point",
-                    "name": self.name}
+                    "name": self.name, "active": self._active}
         if self.id:
             to_dict["_id"] = ObjectId(self.id)
 
@@ -86,7 +93,11 @@ class People(object):
         id = str(data["_id"])
         name = data["name"]
 
-        return cls(x, y, db, id=id, name=name)
+        obj = cls(db, id=id, name=name)
+        obj._active = data["active"]
+        obj.x = x
+        obj.y = y
+        return obj
 
     def __str__(self):
         return unicode({"x": self.x, "y": self.y, "id": str(self.id),
@@ -99,7 +110,8 @@ class People(object):
                                     {"$near":
                                      {"$geometry":{"type": "Point",
                                                    "coordinates": [self.x, self.y]},
-                                      "$maxDistance": 111302 }}})
+                                      "$maxDistance": self._distance }},
+                                    "active": True})
 
     @gen.coroutine
     def remove(self):
@@ -163,20 +175,20 @@ class WSHandler(WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-    def _send_message(self, *args):
-        try:
-            return self.write_message(*args)
-        except:
-            logger.info("Trying to use a close websocket")
-
     @gen.coroutine
     def open(self, name):
         print "new connection", name
         self.people = None
         self.people = yield load_people(self.settings["db"], name)
         if not self.people:
-            raise Exception("TODO: handle user unkown")
-        self.broadcast = Broadcast(self)
+            self.send_error("User do not exists!")
+            logger.error("Name already exists! %s" % name)
+            raise gen.Return(None)
+        try:
+            self.broadcast = Broadcast(self)
+        except KeyError:
+            logger.error("Second user try to connect with same name %s" % name)
+            self.send_error("User already connected")
 
     @gen.coroutine
     def on_message(self, data_json):
@@ -190,7 +202,7 @@ class WSHandler(WebSocketHandler):
         data = json.loads(data_json)
 
         if data["type"] == "position":
-            self.people.x, self.people.y = data["latitude"], data["longitude"]
+            self.people.set_position(data["latitude"], data["longitude"])
             yield self.people.save()
             raise gen.Return(None)
 
@@ -199,20 +211,23 @@ class WSHandler(WebSocketHandler):
 
         yield self.broadcast.send(self.people, msg)
 
+    @gen.coroutine
     def on_close(self):
-        print "connection closed"
+        print "connection closed, user: %s" % str(self.people)
         super(self.__class__, self).on_close()
-        self.people.remove()
-        self.broadcast.remove(self.people.name)
-
-    def message_handler(self, msg):
-        pass
-
-    def position_handler(self):
-        pass
+        yield self.people.remove()
+        if self.broadcast:
+            self.broadcast.remove(self.people.name)
 
 class HomeHandler(RequestHandler):
     """ Returns home screen """
+
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Credentials", "true")
+        self.set_header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+        self.set_header("Access-Control-Allow-Headers",
+            "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By, If-Modified-Since, X-File-Name, Cache-Control")
 
     def check_origin(self, origin):
         return True
@@ -220,16 +235,23 @@ class HomeHandler(RequestHandler):
     def get(self):
         self.render("html/index.html")
 
+    def options(self, *args):
+        return
+
     @gen.coroutine
     def post(self, name):
-
-        logger.debug("Command received " + str(self.request.body))
+        logger.debug("Creating new user: %s -- %s" % (name, str(self.request.body)))
         data = json.loads(self.request.body)
 
-        url, x, y = data["url"], data["latitude"], data["longitude"]
+        self.people = yield load_people(self.settings["db"], name)
+        if self.people:
+            self.send_error(status_code=409)
+            raise gen.Return(None)
 
-        people = People(x, y, db=self.settings["db"], name=name,
-                        url=url)
+        avatar = data["avatar"]
+
+        people = People(db=self.settings["db"], name=name,
+                        avatar=avatar)
         people.save()
         self.write('{"status": "OK"}')
 
@@ -248,7 +270,6 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
     parser.add_argument("--port", help="Server port", default=8888)
-
     args = parser.parse_args()
     server.bind(args.port)
     server.start(1)
