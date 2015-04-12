@@ -24,6 +24,8 @@ var Api138 = function(data) {
 		return 'ws://' + hostname + (((port != 80) && (port != 443)) ? ':' + port : '') + '/ws/' + data.userID;
 	};
 
+	PRIVATE.con = null;
+
 
 	/**
 	 *
@@ -40,25 +42,26 @@ var Api138 = function(data) {
 		CONNECTION.send(JSON.stringify(obj));
 	};
 
-	PUBLIC.timeAgo = function (timestamp) {
+	PUBLIC.timeAgo = function(timestamp) {
 		return jQuery.timeago(timestamp * 1000);
-	}
+	};
+
+	PUBLIC.connection = function () {
+		return CONNECTION;
+	};
 
 
 	/**
 	 *
 	 * DEFINE URL AND SOCKET
 	 *
-	 **/
-
-  PRIVATE.con = null;
+	 **/	
 	CONNECTION = function() {
-		if(!PRIVATE.con)
-	  {
-		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
+		if (!PRIVATE.con) {
+			PRIVATE.con = new WebSocket(PRIVATE.getURL());
 		}
 		return PRIVATE.con;
-	}()
+	}();
 
 
 	/**
@@ -77,7 +80,11 @@ var Api138 = function(data) {
 						type: 'position'
 					});
 
-				CONNECTION.send(geo);
+				if (data.geolocationCallback) {
+					data.geolocationCallback(geo);
+				}
+
+				CONNECTION().send(geo);
 			});
 		}, 5000);
 	} else {
