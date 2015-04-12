@@ -104,7 +104,7 @@ class People(object):
     @gen.coroutine
     def remove(self):
         pass
-        #        yield self.db.people.remove({"_id": ObjectId(self.id)})
+        #yield self.db.people.remove({"_id": ObjectId(self.id)})
 
 class PeopleGroup(object):
     """ Group of people"""
@@ -218,7 +218,7 @@ class HomeHandler(RequestHandler):
         return True
 
     def get(self):
-        self.render("index.html")
+        self.render("html/index.html")
 
     @gen.coroutine
     def post(self, name):
@@ -239,18 +239,19 @@ def main():
     app = Application([url(r"/ws/(\w+)", WSHandler),
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': "static"}),
-                       url(r"/(.*)", StaticFileHandler,
+                       url(r"/(.+)", StaticFileHandler,
                            {'path': "html"}),
                        url(r"/new/(\w+)", HomeHandler),
                        url(r"/", HomeHandler)])
 
     server = HTTPServer(app)
-    server.bind(8888)
-    server.start(1)  # forks one process per cpu
     parser = ArgumentParser()
     parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
-    parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
+    parser.add_argument("--port", help="Server port", default=8888)
+
     args = parser.parse_args()
+    server.bind(args.port)
+    server.start(1)
     app.settings["db"] = MotorClient(args.mongo).db138
     IOLoop.current().start()
 
