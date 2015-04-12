@@ -11,6 +11,7 @@
   <script src="static/assets/lib/onsen/js/angular/angular.js"></script>
   <script src="static/assets/lib/onsen/js/onsenui.js"></script>
   <script src="static/assets/js/jquery-1.11.1.js"></script>
+  <script src="static/assets/js/jquery.timeago.js"></script>
   <script src="static/assets/js/api/api-138.js"></script>
   <script src="static/assets/js/app.js"></script>
 
@@ -86,7 +87,7 @@
             <div class="name">
               <span class="lucent">@{{ message.from }}</span>
             </div>
-            <span class="desc">2 minutos atrás</span>
+            <span class="desc">{{ message.datetime }}</span>
             <br>
             <span class="desc">{{ message.msg }}</span>
           </div>
