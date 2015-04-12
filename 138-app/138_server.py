@@ -194,7 +194,8 @@ class WSHandler(WebSocketHandler):
             yield self.people.save()
             raise gen.Return(None)
 
-        msg = make_message(data["msg"], self.people, data["mentions"] )
+        msg = make_message(data.get("msg", ""), self.people,
+                           data.get("mentions", []))
 
         yield self.broadcast.send(self.people, msg)
 
@@ -247,6 +248,7 @@ def main():
     server.bind(8888)
     server.start(1)  # forks one process per cpu
     parser = ArgumentParser()
+    parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
     parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
     args = parser.parse_args()
     app.settings["db"] = MotorClient(args.mongo).db138
