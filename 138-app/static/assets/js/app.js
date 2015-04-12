@@ -1,19 +1,44 @@
 var app = angular.module('app138', ['onsen.directives']);
 
-app.controller('chat', function($scope, $rootScope, $timeout) {
+
+app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.people = [];
   $scope.messages = [];
 
   $scope.api138 = new Api138({
-    userID: 'fulano',
+    userID: localStorage["username"],
     host: '172.16.5.182',
     port: 8888,
     onMsgCallback: function(data) {
-      $scope.messages.unshift(data);
+      if (data.type == "message") {
+        $scope.messages.unshift(data);
+      } else if (data.type == "neighbors") {
+        $scope.people.unshift(data);
+      }
       $scope.$apply();
     }
   });
+
+
+  $scope.init = function() {
+
+    if (localStorage["username"] === undefined) {
+      var tmp = "user" + Math.random().toString(36).substr(2, 5);
+      var user = prompt("Por favor, digite seu nome:", tmp);
+
+      console.log(user)
+      var data = {
+        "type": "new_user",
+        "avatar": "http://www.avatarsdb.com/avatars/rihanna_shark.jpg"
+      }
+
+      $http.post("http://172.16.5.182:8888/new/" + user, data);
+      localStorage.setItem("username", user);
+    }
+  }
+
+  $scope.currentUser = localStorage.getItem("username");
 
   $scope.login = function() {
     app.slidingMenu.setSwipeable(true);
@@ -68,7 +93,6 @@ app.controller('chat', function($scope, $rootScope, $timeout) {
   };
 
   //$scope.animateText();
-
 
   $scope.sendMessage = function(field) {
     $("#fieldMessage").val("");

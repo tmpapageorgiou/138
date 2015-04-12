@@ -22,6 +22,7 @@ var Api138 = function(data) {
   };
 
   PRIVATE.stringify = function(obj) {
+    console.log(obj);
     return JSON.stringify(obj);
   };
 

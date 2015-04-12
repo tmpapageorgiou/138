@@ -242,7 +242,7 @@ def main():
                        url(r"/(.+)", StaticFileHandler,
                            {'path': "html"}),
                        url(r"/new/(\w+)", HomeHandler),
-                       url(r"/", HomeHandler)])
+                       url(r"/", HomeHandler)], debug=True)
 
     server = HTTPServer(app)
     parser = ArgumentParser()

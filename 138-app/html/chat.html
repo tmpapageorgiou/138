@@ -4,25 +4,26 @@
 <head>
   <meta charset="utf-8">
 
-  <link rel="stylesheet" href="static/assets/lib/onsen/css/onsenui.css">
-  <link rel="stylesheet" href="static/assets/lib/onsen-css-components/onsen-css-components.min.css">
-  <link rel="stylesheet" href="static/assets/css/chat.css">
+  <link rel="stylesheet" href="/static/assets/lib/onsen/css/onsenui.css">
+  <link rel="stylesheet" href="/static/assets/lib/onsen-css-components/onsen-css-components.min.css">
+  <link rel="stylesheet" href="/static/assets/css/chat.css">
+  <link href="/static/assets/css/style.css" rel="stylesheet" />
 
-  <script src="static/assets/lib/onsen/js/angular/angular.js"></script>
-  <script src="static/assets/lib/onsen/js/onsenui.js"></script>
-  <script src="static/assets/js/jquery-1.11.1.js"></script>
-  <script src="static/assets/js/api/api-138.js"></script>
-  <script src="static/assets/js/app.js"></script>
+  <script src="/static/assets/lib/onsen/js/angular/angular.js"></script>
+  <script src="/static/assets/lib/onsen/js/onsenui.js"></script>
+  <script src="/static/assets/js/jquery-1.11.1.js"></script>
+  <script src="/static/assets/js/api/api-138.js"></script>
+  <script src="/static/assets/js/app.js"></script>
 
 
 </head>
 
-<body ng-controller="chat">
+<body ng-controller="chat" ng-init="init()">
 
 
   <!--------- base -------->
   <ons-template id="landing.html">
-    <ons-sliding-menu swipeable="false" var="app.slidingMenu" menu-page="people.html" main-page="page.html" side="right" type="overlay" max-slide-distance="300px">
+    <ons-sliding-menu swipeable="true" var="app.slidingMenu" menu-page="people.html" main-page="page.html" side="right" type="overlay" max-slide-distance="300px">
     </ons-sliding-menu>
   </ons-template>
 
@@ -71,17 +72,22 @@
 
   <ons-template id="page.html">
     <ons-toolbar class="chat-header">
-      <div class="left">
+      <div class="left logo">
         <img src="/static/assets/img/logo.png">
+        <h1>138</h1>
+      </div>
+      <div class="right">
+        <ons-icon icon="fa-power-off" size="20px" fixed-width="false" class="btn-exit"></ons-icon>
       </div>
     </ons-toolbar>
 
     <ons-list>
       <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="message in messages">
-        <div ng-attr-class="{{ message.from != 'me' ? 'list-item-left to-right-pic' : 'list-item-left' }}">
+        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-left to-right-pic' : 'list-item-left' }}">
           <img src="{{ message.avatar }}" class="avator">
+          {{ message }}
         </div>
-        <div ng-attr-class="{{ message.from != 'me' ? 'list-item-right to-right-text' : 'list-item-right' }}">
+        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-right to-right-text' : 'list-item-right' }}">
           <div class="list-item-content">
             <div class="name">
               <span class="lucent">@{{ message.from }}</span>
@@ -99,7 +105,7 @@
 
 
 
-  <!--------- login -------->
+  <!--------- login --------
 
   <ons-template id="login.html">
 
@@ -120,7 +126,7 @@
 
   </ons-template>
 
-  <!--------- chat -------->
+  --------- login -------->
 
 
 
