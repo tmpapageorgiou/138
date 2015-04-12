@@ -87,11 +87,11 @@ var Api318 = function (data) {
 	*
 	**/
 	CONNECTION.onmessage = function(evt) {
-      // data = PRIVATE.parse(evt.data);
-
-      console.log(evt);
-
-       // LOGIC HERE //                          
+		console.log(evt);
+      
+      	if (data.onMsgCallback) {
+      		data.onMsgCallback(evt);
+    	}                    
     };
 
     CONNECTION.onclose = function(evt) {
@@ -110,5 +110,6 @@ var Api318 = function (data) {
 // var t = new Api318({
 // 	userID: 'fulano',
 // 	host: '172.16.5.182',
-// 	port: 8888
+// 	port: 8888,
+//  onMsgCallback: 
 // });
