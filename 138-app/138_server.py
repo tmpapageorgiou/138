@@ -19,11 +19,13 @@ from motor import MotorCursor
 
 from bson.objectid import ObjectId
 
+from argparse import ArgumentParser
+
 from core138 import logger
 
 
 def make_message(msg, people, mentions):
-    return {"from": people.name, "msg": str(msg), "mentions": mentions,
+    return {"from": people.name, "msg": unicode(msg), "mentions": mentions,
             "type": "message", "avatar": people.url,
             "datetime": time.time()}
 
@@ -87,8 +89,10 @@ class People(object):
         return cls(x, y, db, id=id, name=name)
 
     def __str__(self):
-        return str({"x": self.x, "y": self.y, "id": str(self.id),
-                    "name": self.name})
+        return unicode({"x": self.x, "y": self.y, "id": str(self.id),
+                        "name": self.name})
+
+    __unicode__ = __str__
 
     def _neighbors_query(self):
         return self.db.people.find({"loc":
@@ -151,12 +155,7 @@ class Broadcast(object):
                 logger.debug("Sending to: "+key.name)
                 self.clients[key.name].write_message(msg)
 
-        logger.info("Message from %s: %s -- %s " % (str(people), str(msg),
-                    str(neighbors)))
-
-    def __str__(self):
-        return str(self.clients)
-
+        logger.info(u"Message from %s: %s" % (people.name, unicode(msg)))
 
 class WSHandler(WebSocketHandler):
     """ People messenger websocket """
@@ -181,7 +180,7 @@ class WSHandler(WebSocketHandler):
 
     @gen.coroutine
     def on_message(self, data_json):
-        logger.info("Message reveiced: " + str(data_json))
+        logger.info("Message received: " + str(data_json))
         COMMAND_HANDLER = {"messsage": self.message_handler,
                            "position": self.position_handler}
 
@@ -239,14 +238,20 @@ def main():
     app = Application([url(r"/ws/(\w+)", WSHandler),
                        url(r"/static/(.*)", StaticFileHandler,
                            {'path': "static"}),
+                       url(r"/(.*)", StaticFileHandler,
+                           {'path': "html"}),
                        url(r"/new/(\w+)", HomeHandler),
                        url(r"/", HomeHandler)])
 
     server = HTTPServer(app)
     server.bind(8888)
     server.start(1)  # forks one process per cpu
-    app.settings["db"] = MotorClient().db138
+    parser = ArgumentParser()
+    parser.add_argument("--mongo", help="Mongo hostname", default="localhost")
+    args = parser.parse_args()
+    app.settings["db"] = MotorClient(args.mongo).db138
     IOLoop.current().start()
+
 
 if __name__ ==  "__main__":
     main()
