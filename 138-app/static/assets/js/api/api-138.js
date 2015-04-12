@@ -82,9 +82,6 @@ var Api138 = function(data) {
           });
 
         getConnection().send(geo);
-        if (data.geolocationCallback) {
-          data.geolocationCallback(geo);
-        }
       });
     }, 5000);
 
