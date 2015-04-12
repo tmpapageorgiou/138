@@ -14,6 +14,10 @@
 ========================================================  */
 $(document).ready(function () {
 
+    //Cache Of Geo
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(){});
+    }
 
     //AVATAR
     $('.avatars-image').click(function(event){
