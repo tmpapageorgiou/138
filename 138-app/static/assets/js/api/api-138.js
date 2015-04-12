@@ -9,7 +9,7 @@ var Api138 = function(data) {
 		LOCATION = W.location,
 		HOSTNAME = LOCATION.hostname,
 		PORT = LOCATION.port,
-		CONNECTION;
+		getConnection;
 
 
 	/**
@@ -37,7 +37,7 @@ var Api138 = function(data) {
 			mentions: String(str).match(/@[\w]*/g)
 		};
 
-		CONNECTION().send(JSON.stringify(obj));
+		getConnection().send(JSON.stringify(obj));
 	};
 
 	PUBLIC.timeAgo = function (timestamp) {
@@ -52,7 +52,7 @@ var Api138 = function(data) {
 	 **/
 
   PRIVATE.con = null;
-	CONNECTION = function() {
+	getConnection = function() {
 		if(!PRIVATE.con)
 	  {
 		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
@@ -77,7 +77,7 @@ var Api138 = function(data) {
 						type: 'position'
 					});
 
-				CONNECTION().send(geo);
+				getConnection().send(geo);
 			});
 		}, 5000);
 	} else {
@@ -90,13 +90,13 @@ var Api138 = function(data) {
 	 * MESSAGES
 	 *
 	 **/
-	CONNECTION.onmessage = function(evt) {
+	getConnection().onmessage = function(evt) {
 		if (data.onMsgCallback) {
 			data.onMsgCallback(JSON.parse(evt.data));
 		}
 	};
 
-	CONNECTION.onclose = function(evt) {
+	getConnection().onclose = function(evt) {
 		localStorage.clear();
 		console.log('Connection closed');
 		PRIVATE.con = null;
