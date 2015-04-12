@@ -200,7 +200,7 @@ class WSHandler(WebSocketHandler):
 
     @gen.coroutine
     def on_message(self, data_json):
-        logger.info("Message received: " + unicode(data_json))
+        logger.info(u"Message received: " + unicode(data_json))
         COMMAND_HANDLER = {"message": self.message_handler,
                            "position": self.position_handler}
 
@@ -234,7 +234,7 @@ class WSHandler(WebSocketHandler):
         neighbors = yield self.people.neighbors()
         neighbors_msg = neighbors.to_dict()
         neighbors_msg["type"] = "neighbors"
-        logger.debug("Sending neighbors: "+unicode(neighbors_msg))
+        logger.debug(u"Sending neighbors: "+unicode(neighbors_msg))
         self.write_message(json.dumps(neighbors_msg))
 
 class HomeHandler(CorsMixin, RequestHandler):
