@@ -1,0 +1,112 @@
+<!doctype html>
+<html ng-app="app138">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="lib/onsen/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsen-css-components/onsen-css-components.min.css">
+  <link rel="stylesheet" href="css/chat.css">
+
+  <script src="lib/onsen/js/angular/angular.js"></script>
+  <script src="lib/onsen/js/onsenui.js"></script>
+  <script src="js/jquery-2.1.3.min.js"></script>
+  <script src="js/app.js"></script>
+
+</head>
+
+<body ng-controller="chat">
+
+
+  <!--------- base -------->
+  <ons-template id="landing.html">
+    <ons-sliding-menu swipeable="false" var="app.slidingMenu" menu-page="people.html" main-page="login.html" side="right" type="overlay" max-slide-distance="300px">
+    </ons-sliding-menu>
+  </ons-template>
+
+  <ons-tabbar hide-tabs="hgoe">
+    <ons-tab page="landing.html" active="true">
+      <form name="frmMessage" ng-submit="sendMessage(field)">
+        <ons-icon icon="" class="ons-icon ons-icon--ion">&nbsp;&nbsp;»</ons-icon>
+        <input type="text" ng-model="field" name="field" id="fieldMessage" maxlength=140 class="text-input text-input--transparent" placeholder="" style="width: 100%; vertical-align: middle;">
+      </form>
+    </ons-tab>
+  </ons-tabbar>
+  <!--------- base -------->
+
+
+  <!--------- people -------->
+  <ons-template id="people.html">
+    <ons-toolbar>
+      <div class="center">Pessoas</div>
+    </ons-toolbar>
+
+
+    <ons-list class="person-list">
+      <ons-list-item class="person" modifier="" ng-repeat="person in people">
+        <ons-row ng-click="sendTo(person.name); app.slidingMenu.toggleMenu()">
+          <ons-col width="40px">
+            <img src="http://www.avatarsdb.com/avatars/acrobat.gif" class="person-image">
+          </ons-col>
+          <ons-col class="person-name">
+            {{ person.name }}
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+
+
+  </ons-template>
+
+  <!--------- people -------->
+
+
+
+
+
+
+  <!--------- chat -------->
+
+  <ons-template id="page.html">
+    <ons-toolbar>
+      <div class="center">138</div>
+    </ons-toolbar>
+
+    <ons-list>
+      <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="item in items">
+        <div ng-attr-class="{{ item.from != 'me' ? 'list-item-left to-right-pic' : 'list-item-left' }}">
+          <img src="{{ item.avatar }}" class="avator">
+        </div>
+        <div ng-attr-class="{{ item.from != 'me' ? 'list-item-right to-right-text' : 'list-item-right' }}">
+          <div class="list-item-content">
+            <div class="name">
+              <span class="lucent">@{{ item.from }}</span>
+            </div>
+            <span class="desc">2 minutos atrás</span>
+            <br>
+            <span class="desc">{{ item.msg }}</span>
+          </div>
+        </div>
+      </ons-list-item>
+    </ons-list>
+  </ons-template>
+
+  <!--------- chat -------->
+
+
+
+  <!--------- login -------->
+
+  <ons-template id="login.html">
+    <div class="login_page">
+      <img src="img/facebook_login_button.png" ng-click="login()">
+    </div>
+
+  </ons-template>
+
+  <!--------- chat -------->
+
+
+
+</body>
+
+</html>
