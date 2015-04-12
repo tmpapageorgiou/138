@@ -51,8 +51,14 @@ var Api138 = function(data) {
 	 *
 	 **/
 
-
-	CONNECTION = new WebSocket(PRIVATE.getURL());
+  PRIVATE.con = null;
+	CONNECTION = function() {
+		if(!PRIVATE.con)
+	  {
+		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
+		}
+		return PRIVATE.con;
+	}
 
 
 	/**
@@ -92,6 +98,7 @@ var Api138 = function(data) {
 
 	CONNECTION.onclose = function(evt) {
 		console.log('Connection closed');
+		PRIVATE.con = null;
 	};
 
 

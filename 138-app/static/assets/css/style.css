@@ -174,6 +174,8 @@ color:#000;
     }
 
  .btn-two {
+margin: 20px auto;
+width: 200px;
 background-color: #f26241;
 border:5px solid #f26241;
 color:#fff;
@@ -368,5 +370,20 @@ width:100%;
 {
 margin-top:20px;
 }
+
+}
+
+/*================================
+     USER STYLES
+ ============================  */
+#user-login input{
+  width: 45%;
+}
+
+#user-nickname {
+  margin-top: 37px;
+  margin-right: 20px;
+  padding-left: 10px;
+  width: 300px;
 
 }
