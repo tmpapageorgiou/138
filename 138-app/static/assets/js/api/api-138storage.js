@@ -11,14 +11,12 @@ var Storage138 = function (data) {
 	* PUBLIC METHODS
 	*
 	**/
-	PUBLIC.setStorage = function (obj) {
-		for (var key in obj) {
-			localStorage.setItem(key, obj[key]);
-		}
+	PUBLIC.setStorage = function (key, value) {
+		localStorage.setItem(key, JSON.stringify(value));
 	};
 
 	PUBLIC.getStorage = function (key) {
-		return localStorage.getItem(key);
+		return JSON.parse(localStorage.getItem(key));
 	};
 
 	PUBLIC.rescue = function () {
@@ -43,19 +41,16 @@ var Storage138 = function (data) {
 /*
 ## SAMPLE ##
 
+
 // instance
 var storage = new Storage138();
 
 // set
-storage.setStorage({
-	chave1: 'value1',
-	chave2: 'value2',
-	chave3: 'value3'
-});
+storage.setStorage('user', {ps: 123, tt: 432});
 
 // get
-console.log('get', storage.getStorage('chave1') );
+console.log('get', storage.getStorage('user') );
 
-// rescue all
+// // rescue all
 console.log('getAll', storage.rescue());
 */
