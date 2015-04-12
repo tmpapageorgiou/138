@@ -55,7 +55,7 @@ var Api138 = function(data) {
 	 *
 	 * DEFINE URL AND SOCKET
 	 *
-	 **/	
+	 **/
 	CONNECTION = function() {
 		if (!PRIVATE.con) {
 			PRIVATE.con = new WebSocket(PRIVATE.getURL());
@@ -77,14 +77,14 @@ var Api138 = function(data) {
 						latitude: lat,
 						longitude: lon,
 						type: 'position'
-					});			
+					});
 
 				CONNECTION().send(geo);
 			});
 		}, 5000);
 
 		if (data.geolocationCallback) {
-			navigator.geolocation.watchPosition(data.geolocationCallback(position));
+			navigator.geolocation.watchPosition(data.geolocationCallback);
 		}
 	} else {
 		alert('API Geolocation not found');

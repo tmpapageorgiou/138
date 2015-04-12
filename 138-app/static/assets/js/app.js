@@ -25,11 +25,17 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
       for (var i = 0; i < $scope.messages.length; i++) {
         console.log($scope.api138.timeAgo($scope.messages[i].datetime));
-
         $scope.messages[i].timeAgo = $scope.api138.timeAgo($scope.messages[i].datetime);
       }
 
       $scope.$apply();
+    },
+    geolocationCallback: function(position) {
+      if (position.coords) {
+        $("#fieldMessage").removeAttr("disabled");
+        $("#fieldMessage").removeClass("disabled");
+        $("#fieldMessage").val("");
+      }
     }
   });
 
@@ -53,7 +59,7 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
     $("#fieldMessage").focus();
   }
 
-  $scope.field = "";
+  $scope.field = "Carregando...";
   $scope.randomSentences = ["Conheça novas pessoas.",
     "Converse pessoas pŕoximas a você.",
     "Fale com pessoas no seu círculo de bate papo.",

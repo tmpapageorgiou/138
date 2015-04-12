@@ -36,7 +36,7 @@ $(document).ready(function () {
     $("#user-login").submit(function(event){
       event.preventDefault();
 
-      if(nickInvalid)
+      if(!nickInvalid)
       {
         $("#login-error").html("Nickname deve conter apenas letras ou números.")
       }
