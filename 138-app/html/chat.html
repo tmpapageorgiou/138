@@ -14,6 +14,7 @@
   <script src="/static/assets/lib/onsen/js/onsenui.js"></script>
   <script src="/static/assets/js/jquery-1.11.1.js"></script>
   <script src="/static/assets/js/jquery.timeago.js"></script>
+  <script src="/static/assets/js/jquery.timeago.pt-br.js"></script>
   <script src="/static/assets/js/api/api-138.js"></script>
   <script src="/static/assets/js/app.js"></script>
 
@@ -44,7 +45,7 @@
   <!--------- people -------->
   <ons-template id="people.html">
     <ons-toolbar>
-      <div class="center">Pessoas</div>
+      <div class="center chat-header"></div>
     </ons-toolbar>
 
 
@@ -52,7 +53,7 @@
       <ons-list-item class="person" modifier="" ng-repeat="person in people">
         <ons-row ng-click="sendTo(person.name); app.slidingMenu.toggleMenu()">
           <ons-col width="40px">
-            <img src="http://www.avatarsdb.com/avatars/acrobat.gif" class="person-image">
+            <img src="{{ person.avatar }}" class="person-image">
           </ons-col>
           <ons-col class="person-name">
             {{ person.name }}
@@ -80,22 +81,21 @@
         <h1>138</h1>
       </div>
       <div class="right">
-        <ons-icon icon="fa-power-off" size="20px" fixed-width="false" class="btn-exit"></ons-icon>
+        <ons-icon icon="fa-power-off" size="20px" fixed-width="false" class="btn-exit" ng-click="logout()"></ons-icon>
       </div>
     </ons-toolbar>
 
     <ons-list>
       <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="message in messages">
-        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-left to-right-pic' : 'list-item-left' }}">
+        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-left' : 'list-item-left to-right-pic' }}">
           <img src="{{ message.avatar }}" class="avator">
         </div>
-        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-right to-right-text' : 'list-item-right' }}">
+        <div ng-attr-class="{{ message.from != currentUser ? 'list-item-right' : 'list-item-right  to-right-text' }}">
           <div class="list-item-content">
             <div class="name">
               <span class="lucent">@{{ message.from }}</span>
+              <span class="desc timeago">{{ message.timeAgo }}</span>
             </div>
-            <span class="desc">{{ message.datetime }}</span>
-            <br>
             <span class="desc">{{ message.msg }}</span>
           </div>
         </div>
