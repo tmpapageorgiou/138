@@ -39,7 +39,7 @@ var Api138 = function(data) {
 			mentions: String(str).match(/@[\w]*/g)
 		};
 
-		CONNECTION.send(JSON.stringify(obj));
+		CONNECTION().send(JSON.stringify(obj));
 	};
 
 	PUBLIC.timeAgo = function(timestamp) {
@@ -61,8 +61,7 @@ var Api138 = function(data) {
 			PRIVATE.con = new WebSocket(PRIVATE.getURL());
 		}
 		return PRIVATE.con;
-	}();
-
+	};
 
 	/**
 	 *
@@ -78,15 +77,15 @@ var Api138 = function(data) {
 						latitude: lat,
 						longitude: lon,
 						type: 'position'
-					});
-
-				if (data.geolocationCallback) {
-					data.geolocationCallback(geo);
-				}
+					});			
 
 				CONNECTION().send(geo);
 			});
 		}, 5000);
+
+		if (data.geolocationCallback) {
+			navigator.geolocation.watchPosition(data.geolocationCallback(position));
+		}
 	} else {
 		alert('API Geolocation not found');
 	}
@@ -104,6 +103,7 @@ var Api138 = function(data) {
 	};
 
 	CONNECTION.onclose = function(evt) {
+		localStorage.clear();
 		console.log('Connection closed');
 		PRIVATE.con = null;
 	};
