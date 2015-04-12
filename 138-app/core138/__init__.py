@@ -5,7 +5,7 @@ import time
 class BufferLog(object):
 
     def _log(self, msg):
-        print msg
+        print unicode(msg)
 
     info = _log
     debug = _log
