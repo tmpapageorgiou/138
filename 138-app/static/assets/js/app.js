@@ -1,6 +1,7 @@
 var app = angular.module('app138', ['onsen.directives']);
 
-if (localStorage.getItem("username") === null) {
+if (localStorage.getItem("username") === null || document.referrer == "") {
+  localStorage.clear();
   location.href = "/";
 }
 
@@ -14,7 +15,6 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
   $scope.api138 = new Api138({
     userID: localStorage["username"],
     host: window.location.host,
-    port: window.location.port || 80,
     onMsgCallback: function(data) {
 
       if (data.type == "message") {
