@@ -28,7 +28,8 @@ $(document).ready(function () {
     });
 
 
-    nickInvalid = function(name){
+
+    validName = function(name){
       return /^.*([a-z]|[0-9]|[A-Z])$/.test(name)
     }
 
@@ -36,7 +37,7 @@ $(document).ready(function () {
     $("#user-login").submit(function(event){
       event.preventDefault();
 
-      if(!nickInvalid)
+      if(!validName)
       {
         $("#login-error").html("Nickname deve conter apenas letras ou números.")
       }
