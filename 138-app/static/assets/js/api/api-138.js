@@ -78,7 +78,6 @@ var Api138 = function(data) {
             longitude: lon,
             type: 'position'
           });
-
         getConnection().send(geo);
       });
     }, 5000);
