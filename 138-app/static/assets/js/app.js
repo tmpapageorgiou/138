@@ -5,6 +5,17 @@ if (localStorage.getItem("username") === null || document.referrer == "") {
   location.href = "/";
 }
 
+
+if (navigator.geolocation) {
+
+  navigator.geolocation.getCurrentPosition(function() {}, function() {}, {
+    maximumAge: 10000,
+    timeout: 1000,
+    enableHighAccuracy: true
+  });
+
+}
+
 app.controller('chat', function($scope, $rootScope, $timeout, $http) {
 
   $scope.people = [];
@@ -88,5 +99,6 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
       $scope.api138.sendMessage(field);
       field = "";
     }
+    $("#fieldMessage").val("");
   }
 });
