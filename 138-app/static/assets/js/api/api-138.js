@@ -9,8 +9,7 @@ var Api318 = function (data) {
 		LOCATION = W.location,
 		HOSTNAME = LOCATION.hostname,
 		PORT = LOCATION.port,
-		URL = 'ws://' + HOSTNAME + (((PORT != 80) && (PORT != 443)) ? ':' + PORT : '') + '/ws/' + data.userID,
-		CONNECTION = new WebSocket(URL);
+		CONNECTION;
 
 
 	/**
@@ -24,6 +23,13 @@ var Api318 = function (data) {
 
 	PRIVATE.stringify = function (obj) {
 		return JSON.stringify(obj);
+	};
+
+	PRIVATE.getURL = function () {
+		var hostname = data.hostname ? data.hostname : HOSTNAME,
+			port = data.port ? data.port : PORT;
+
+		return 'ws://' + hostname + (((port != 80) && (port != 443)) ? ':' + port : '') + '/ws/' + data.userID,
 	};
 
 
@@ -41,6 +47,14 @@ var Api318 = function (data) {
 		
 		CONNECTION.send(PRIVATE.stringify(obj));
 	};
+
+
+	/**
+	*
+	* DEFINE URL AND SOCKET
+	*
+	**/
+	CONNECTION = new WebSocket(PRIVATE.getURL());
 
 
 	/**
@@ -91,5 +105,10 @@ var Api318 = function (data) {
 	*
 	**/
 	return PUBLIC;
-};
+}; 
 
+// var t = new Api318({
+// 	userID: 'fulano',
+// 	host: '172.16.5.182',
+// 	port: 8888
+// });
