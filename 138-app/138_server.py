@@ -235,10 +235,9 @@ class WSHandler(WebSocketHandler):
         neighbors = yield self.people.neighbors()
 
         if new_in_room:
-            for people in neighbors:
-                 msg = make_message("Agora o grupo tem mais um integrande",
-                                    self.people, [])
-                 self.broadcast.send(people, msg)
+            msg = make_message("Agora o grupo tem mais um integrante",
+                               self.people, [])
+            yield self.broadcast.send(self.people, msg)
 
         neighbors_msg = neighbors.to_dict()
         neighbors_msg["type"] = "neighbors"
