@@ -58,7 +58,7 @@ var Api138 = function(data) {
 		  PRIVATE.con = new WebSocket(PRIVATE.getURL());
 		}
 		return PRIVATE.con;
-	}
+	}()
 
 
 	/**
