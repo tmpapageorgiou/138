@@ -59,6 +59,7 @@ var Api138 = function(data) {
   getConnection = function() {
     if (!PRIVATE.con) {
       PRIVATE.con = new WebSocket(PRIVATE.getURL());
+      PRIVATE.con.Origin = "http://" + (data.host ? data.host : HOSTNAME);
     }
     return PRIVATE.con;
   };
