@@ -82,12 +82,13 @@ var Api138 = function(data) {
           });
 
         getConnection().send(geo);
+        if (data.geolocationCallback) {
+          data.geolocationCallback(geo);
+        }
       });
     }, 5000);
 
-    if (data.geolocationCallback) {
-      navigator.geolocation.watchPosition(data.geolocationCallback);
-    }
+
   } else {
     alert('API Geolocation not found');
   }

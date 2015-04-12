@@ -29,13 +29,6 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
       }
 
       $scope.$apply();
-    },
-    geolocationCallback: function(position) {
-      if (position.coords) {
-        $("#fieldMessage").removeAttr("disabled");
-        $("#fieldMessage").removeClass("disabled");
-        $("#fieldMessage").val("");
-      }
     }
   });
 
@@ -59,7 +52,7 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
     $("#fieldMessage").focus();
   }
 
-  $scope.field = "Carregando...";
+  $scope.field = "";
   $scope.randomSentences = ["Conheça novas pessoas.",
     "Converse pessoas pŕoximas a você.",
     "Fale com pessoas no seu círculo de bate papo.",
