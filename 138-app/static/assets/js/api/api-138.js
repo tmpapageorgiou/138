@@ -48,7 +48,7 @@ var Api138 = function(data) {
 		CONNECTION.send(PRIVATE.stringify(obj));
 	};
 
-	PUBLIC.dateConvert = function (timestamp) {
+	PUBLIC.timeAgo = function (timestamp) {
 		return jQuery.timeago(timestamp * 1000);
 	}
 
