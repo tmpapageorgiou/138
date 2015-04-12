@@ -49,7 +49,7 @@ $(document).ready(function () {
           },
           error: function(response){
             var error;
-            if(response.code == 409)
+            if(response.status == 409)
             {
               error = "Nickname já utilizado, escolha outro."
             }else
