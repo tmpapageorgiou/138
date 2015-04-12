@@ -84,9 +84,9 @@ app.controller('chat', function($scope, $rootScope, $timeout, $http) {
   //$scope.animateText();
 
   $scope.sendMessage = function(field) {
-    $("#fieldMessage").val("");
     if (field != "") {
       $scope.api138.sendMessage(field);
+      field = "";
     }
   }
 });
