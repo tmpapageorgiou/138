@@ -59,6 +59,7 @@ var Api138 = function(data) {
   getConnection = function() {
     if (!PRIVATE.con) {
       PRIVATE.con = new WebSocket(PRIVATE.getURL());
+      PRIVATE.con.Origin = "http://" + (data.host ? data.host : HOSTNAME);
     }
     return PRIVATE.con;
   };
@@ -78,7 +79,6 @@ var Api138 = function(data) {
             longitude: lon,
             type: 'position'
           });
-
         getConnection().send(geo);
       });
     }, 5000);
